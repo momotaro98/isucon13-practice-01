@@ -321,7 +321,7 @@ func loginHandler(c echo.Context) error {
 	}
 
 	sess.Options = &sessions.Options{
-		Domain: "u.isucon.dev",
+		// Domain: "u.isucon.local", 一旦コメントアウト
 		MaxAge: int(60000),
 		Path:   "/",
 	}
@@ -380,19 +380,18 @@ func verifyUserSession(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "failed to get session")
 	}
 
-	// sessionExpires, ok := sess.Values[defaultSessionExpiresKey]
-	// if !ok {
-	// 	return echo.NewHTTPError(http.StatusForbidden, "failed to get EXPIRES value from session")
-	// }
-	sessionExpires := time.Now().Add(1 * time.Hour).Unix()
+	sessionExpires, ok := sess.Values[defaultSessionExpiresKey]
+	if !ok {
+		return echo.NewHTTPError(http.StatusForbidden, "failed to get EXPIRES value from session")
+	}
 
-	_, ok := sess.Values[defaultUserIDKey].(int64)
+	_, ok = sess.Values[defaultUserIDKey].(int64)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "failed to get USERID value from session")
 	}
 
 	now := time.Now()
-	if now.Unix() > sessionExpires {
+	if now.Unix() > sessionExpires.(int64) {
 		return echo.NewHTTPError(http.StatusUnauthorized, "session has expired")
 	}
 
