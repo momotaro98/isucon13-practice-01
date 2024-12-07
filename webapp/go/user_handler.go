@@ -380,18 +380,19 @@ func verifyUserSession(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "failed to get session")
 	}
 
-	sessionExpires, ok := sess.Values[defaultSessionExpiresKey]
-	if !ok {
-		return echo.NewHTTPError(http.StatusForbidden, "failed to get EXPIRES value from session")
-	}
+	// sessionExpires, ok := sess.Values[defaultSessionExpiresKey]
+	// if !ok {
+	// 	return echo.NewHTTPError(http.StatusForbidden, "failed to get EXPIRES value from session")
+	// }
+	sessionExpires := time.Now().Add(1 * time.Hour).Unix()
 
-	_, ok = sess.Values[defaultUserIDKey].(int64)
+	_, ok := sess.Values[defaultUserIDKey].(int64)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "failed to get USERID value from session")
 	}
 
 	now := time.Now()
-	if now.Unix() > sessionExpires.(int64) {
+	if now.Unix() > sessionExpires {
 		return echo.NewHTTPError(http.StatusUnauthorized, "session has expired")
 	}
 
