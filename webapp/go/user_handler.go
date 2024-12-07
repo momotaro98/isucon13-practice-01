@@ -321,8 +321,7 @@ func loginHandler(c echo.Context) error {
 	}
 
 	sess.Options = &sessions.Options{
-		Domain: "u.isucon.local",
-		// Domain: "u.isucon.dev",
+		Domain: "u.isucon.dev",
 		MaxAge: int(60000),
 		Path:   "/",
 	}
